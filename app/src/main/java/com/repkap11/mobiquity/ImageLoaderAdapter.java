@@ -16,6 +16,7 @@ import com.dropbox.client2.exception.DropboxException;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
+import com.nostra13.universalimageloader.core.assist.ImageScaleType;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -26,26 +27,34 @@ import java.util.Random;
  */
 public class ImageLoaderAdapter extends BaseAdapter {
     private static final String TAG = ImageLoaderAdapter.class.getSimpleName();
-    private final ArrayList<String> mURLs;
+    private ArrayList<String> mURLs;
     private GreetingsActivity mActivity;
-    public ImageLoaderAdapter(GreetingsActivity activity, ArrayList<String> urls){
-        Log.e(TAG,"Image loader recreated");
-        DisplayImageOptions defaultOptions = new DisplayImageOptions.Builder()
-        .cacheInMemory(true)
-        .cacheOnDisk(true)
-        .considerExifParams(true)
-        //.showImageOnLoading(R.drawable.download_failure_icon)
-        //.showImageForEmptyUri(R.drawable.ic_empty)
-        .showImageOnFail(R.drawable.download_failure_icon)
-        .build();
-        ImageLoaderConfiguration config = new ImageLoaderConfiguration.Builder(activity)
-        .defaultDisplayImageOptions(defaultOptions)
-        .build();
-        ImageLoader.getInstance().init(config);
+
+    public ImageLoaderAdapter(GreetingsActivity activity, ArrayList<String> urls) {
+        Log.e(TAG, "Image loader recreated");
         this.mActivity = activity;
         this.mURLs = urls;
+        DisplayImageOptions defaultOptions = new DisplayImageOptions.Builder()
+                .cacheInMemory(true)
+                .cacheOnDisk(true)
+                .considerExifParams(true)
+                .imageScaleType(ImageScaleType.IN_SAMPLE_POWER_OF_2)
+                        //.showImageOnLoading(null)
+                        //.showImageForEmptyUri(null)
+                .showImageOnFail(R.drawable.download_failure_icon)
+                .build();
+        ImageLoaderConfiguration config = new ImageLoaderConfiguration.Builder(activity)
+                .defaultDisplayImageOptions(defaultOptions)
+                .imageDownloader(new DropboxImageDownloader(mActivity))
+                .threadPoolSize(5)
+                .build();
+        ImageLoader.getInstance().init(config);
+
     }
 
+    public void setData(ArrayList<String> data) {
+        mURLs = data;
+    }
 
     @Override
     public int getCount() {
@@ -61,26 +70,30 @@ public class ImageLoaderAdapter extends BaseAdapter {
     public long getItemId(int position) {
         return 0;
     }
-private static class ItemHolder {
-    public ImageView mImageView;
-    public ItemHolder(View baseView){
-        ImageView imageView = (ImageView)baseView.findViewById(R.id.fragment_item_grid_element_image);
-        this.mImageView = imageView;
+
+    private static class ItemHolder {
+        public ImageView mImageView;
+
+        public ItemHolder(View baseView) {
+            ImageView imageView = (ImageView) baseView.findViewById(R.id.fragment_item_grid_element_image);
+            this.mImageView = imageView;
+        }
     }
-}
+
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
         ImageLoader loader = ImageLoader.getInstance();
         View returnView;
-        if (convertView == null){
+        if (convertView == null) {
             LayoutInflater inflater = (LayoutInflater) mActivity.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-            returnView = inflater.inflate(R.layout.fragment_item_grid_element,parent, false);
+            returnView = inflater.inflate(R.layout.fragment_item_grid_element, parent, false);
             returnView.setTag(new ItemHolder(returnView));
-        } else
-        {
+        } else {
             returnView = convertView;
         }
-        ImageView imageView = ((ItemHolder)returnView.getTag()).mImageView;
+        ImageView imageView = ((ItemHolder) returnView.getTag()).mImageView;
+        imageView.setImageDrawable(null);
+        //Log.i(TAG,"Loader about to display image");
         loader.displayImage(mURLs.get(position), imageView);
         /*
         loader.loadImage(, DisplayImageOptions.createSimple(),new ImageLoadingListener() {

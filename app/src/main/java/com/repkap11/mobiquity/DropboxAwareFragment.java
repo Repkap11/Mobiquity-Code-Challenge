@@ -24,6 +24,7 @@ public abstract class DropboxAwareFragment extends Fragment {
     private DropboxGetMetadataService myServiceBinder;
     private ResponseReceiver mResponseReceiver = new ResponseReceiver();
     private boolean mResponseReceiverRegistered = false;
+    private boolean mNeedsDownload = true;
 
 
     @Override
@@ -49,7 +50,10 @@ public abstract class DropboxAwareFragment extends Fragment {
         public void onServiceConnected(ComponentName className, IBinder binder) {
             myServiceBinder = ((DropboxGetMetadataService.MyBinder) binder).getService();
             Log.i(TAG, "connected");
-            getDropboxMetadata("/");
+            if (mNeedsDownload) {
+                getDropboxMetadata("/");
+                mNeedsDownload = false;
+            }
         }
 
         public void onServiceDisconnected(ComponentName className) {
@@ -85,12 +89,15 @@ public abstract class DropboxAwareFragment extends Fragment {
     }
 
     protected void getDropboxMetadata(String path) {
-        DropboxAPI api = ((GreetingsActivity) getActivity()).mDBApi;
-        if (api != null) {
-            myServiceBinder.startDownloadMetadata(api, path);
-        } else
-        {
-            Log.e(TAG,"Unable to get Dropbox metadata while db api is null");
+        if (getActivity() != null) {
+            DropboxAPI api = ((GreetingsActivity) getActivity()).mDBApi;
+            if (api != null) {
+                myServiceBinder.startDownloadMetadata(api, path);
+            } else {
+                Log.e(TAG, "Unable to get Dropbox metadata while db api is null");
+            }
+        } else {
+            Log.e(TAG, "Unable to get Dropbox metadata while activity is null");
         }
     }
 

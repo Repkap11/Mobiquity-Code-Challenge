@@ -41,7 +41,7 @@ public class ImageGridFragment extends DropboxAwareFragment implements AbsListVi
 
     private OnFragmentInteractionListener mListener;
     private AbsListView mListView;
-    private ListAdapter mAdapter;
+    private ImageLoaderAdapter mAdapter;
 
     public static ImageGridFragment newInstance(String param1, String param2) {
         ImageGridFragment fragment = new ImageGridFragment();
@@ -72,8 +72,10 @@ public class ImageGridFragment extends DropboxAwareFragment implements AbsListVi
     @Override
     public void onMetadataReceived(ArrayList<String> data){
         Log.i(TAG,"Received data with:"+data.size()+" elements");
-        mAdapter = new ImageLoaderAdapter((GreetingsActivity)getActivity(),data);
-        ((AdapterView<ListAdapter>) mListView).setAdapter(mAdapter);
+        mAdapter.setData(data);
+        mAdapter.notifyDataSetChanged();
+        //((AdapterView<ListAdapter>) mListView).setAdapter(mAdapter);
+
     }
 
     @Override

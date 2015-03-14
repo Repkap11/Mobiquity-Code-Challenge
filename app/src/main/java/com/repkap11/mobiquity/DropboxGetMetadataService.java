@@ -55,9 +55,10 @@ public class DropboxGetMetadataService extends Service {
                         for (int i = 0; i < files.size(); i++) {
                             DropboxAPI.Entry file = files.get(i);
                             if (!file.isDeleted) {
-                                DropboxAPI.DropboxLink link = dbAPI.media(file.path, true);
-                                String url = link.url;
-                                Log.i(TAG, "File Name:" + file.fileName() + " URL:" + url);
+                                //DropboxAPI.DropboxLink link = dbAPI.media(file.path, true);
+                                //String url = link.url;
+                                String url = file.path;
+                                //Log.i(TAG, "File Name:" + file.fileName() + " URL:" + url);
                                 urls.add(i,url);
                             }
                         }

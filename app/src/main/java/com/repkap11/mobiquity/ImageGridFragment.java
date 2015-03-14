@@ -1,10 +1,6 @@
 package com.repkap11.mobiquity;
 
 import android.app.Activity;
-import android.content.BroadcastReceiver;
-import android.content.Context;
-import android.content.Intent;
-import android.content.IntentFilter;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -13,49 +9,24 @@ import android.view.ViewGroup;
 import android.widget.AbsListView;
 import android.widget.AdapterView;
 import android.widget.ListAdapter;
-import android.widget.TextView;
 
 import java.util.ArrayList;
 
 
 /**
  * A fragment representing a list of Items.
- * <p/>
- * Large screen devices (such as tablets) are supported by replacing the ListView
- * with a GridView.
- * <p/>
- * Activities containing this fragment MUST implement the {@link OnFragmentInteractionListener}
+ * Activities containing this fragment MUST implement the {@link FragmentInteractionListener}
  * interface.
  */
-public class ImageGridFragment extends DropboxAwareFragment implements AbsListView.OnItemClickListener {
+public class ImageGridFragment extends PictureTakingFragment implements AbsListView.OnItemClickListener {
 
     private static final String TAG = ImageGridFragment.class.getSimpleName();
+    protected static final int REQUEST_IMAGE_CAPTURE = 1;
 
-
-    private static final String ARG_PARAM1 = "param1";
-    private static final String ARG_PARAM2 = "param2";
-
-    // TODO: Rename and change types of parameters
-    private String mParam1;
-    private String mParam2;
-
-    private OnFragmentInteractionListener mListener;
+    private FragmentInteractionListener mListener;
     private AbsListView mListView;
     private ImageLoaderAdapter mAdapter;
 
-    public static ImageGridFragment newInstance(String param1, String param2) {
-        ImageGridFragment fragment = new ImageGridFragment();
-        Bundle args = new Bundle();
-        args.putString(ARG_PARAM1, param1);
-        args.putString(ARG_PARAM2, param2);
-        fragment.setArguments(args);
-        return fragment;
-    }
-
-    /**
-     * Mandatory empty constructor for the fragment manager to instantiate the
-     * fragment (e.g. upon screen orientation changes).
-     */
     public ImageGridFragment() {
     }
 
@@ -63,10 +34,6 @@ public class ImageGridFragment extends DropboxAwareFragment implements AbsListVi
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setRetainInstance(true);
-        if (getArguments() != null) {
-            mParam1 = getArguments().getString(ARG_PARAM1);
-            mParam2 = getArguments().getString(ARG_PARAM2);
-        }
         mAdapter = new ImageLoaderAdapter((GreetingsActivity)getActivity(), new ArrayList<String>());
     }
     @Override
@@ -74,7 +41,6 @@ public class ImageGridFragment extends DropboxAwareFragment implements AbsListVi
         Log.i(TAG,"Received data with:"+data.size()+" elements");
         mAdapter.setData(data);
         mAdapter.notifyDataSetChanged();
-        //((AdapterView<ListAdapter>) mListView).setAdapter(mAdapter);
 
     }
 
@@ -89,7 +55,6 @@ public class ImageGridFragment extends DropboxAwareFragment implements AbsListVi
 
         // Set OnItemClickListener so we can be notified on item clicks
         mListView.setOnItemClickListener(this);
-
         return view;
     }
 
@@ -97,7 +62,7 @@ public class ImageGridFragment extends DropboxAwareFragment implements AbsListVi
     public void onAttach(Activity activity) {
         super.onAttach(activity);
         try {
-            mListener = (OnFragmentInteractionListener) activity;
+            mListener = (FragmentInteractionListener) activity;
         } catch (ClassCastException e) {
             throw new ClassCastException(activity.toString()
                     + " must implement OnFragmentInteractionListener");
@@ -116,7 +81,7 @@ public class ImageGridFragment extends DropboxAwareFragment implements AbsListVi
         if (null != mListener) {
             // Notify the active callbacks interface (the activity, if the
             // fragment is attached to one) that an item has been selected.
-            mListener.onFragmentInteraction(position);
+            mListener.onImageGridFragmentInteraction(position);
         }
     }
     @Override
@@ -135,8 +100,8 @@ public class ImageGridFragment extends DropboxAwareFragment implements AbsListVi
      * "http://developer.android.com/training/basics/fragments/communicating.html"
      * >Communicating with Other Fragments</a> for more information.
      */
-    public interface OnFragmentInteractionListener {
+    public interface FragmentInteractionListener {
         // TODO: Update argument type and name
-        public void onFragmentInteraction(int position);
+        public void onImageGridFragmentInteraction(int position);
     }
 }

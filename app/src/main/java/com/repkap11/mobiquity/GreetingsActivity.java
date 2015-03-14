@@ -2,29 +2,25 @@ package com.repkap11.mobiquity;
 
 import android.app.Fragment;
 import android.content.SharedPreferences;
-import android.net.Uri;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.widget.TextView;
 
 import com.dropbox.client2.DropboxAPI;
 import com.dropbox.client2.android.AndroidAuthSession;
 import com.dropbox.client2.session.AccessTokenPair;
 import com.dropbox.client2.session.AppKeyPair;
 import com.nostra13.universalimageloader.core.ImageLoader;
-import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
-import com.nostra13.universalimageloader.utils.MemoryCacheUtils;
 
 
-public class GreetingsActivity extends ActionBarActivity implements ImageGridFragment.OnFragmentInteractionListener, LoginFragment.OnFragmentInteractionListener {
+public class GreetingsActivity extends ActionBarActivity implements ImageGridFragment.FragmentInteractionListener, LoginFragment.FragmentInteractionListener {
     private static final String TAG = GreetingsActivity.class.getSimpleName();
     public DropboxAPI<AndroidAuthSession> mDBApi;
     private String mDBAccessToken;
 
-    //Used for DB access key cacheing
+    //Used for DB access key caching
     private static final String ACCOUNT_PREFS_NAME = "prefs";
     private static final String ACCESS_KEY_NAME = "ACCESS_KEY";
     private static final String ACCESS_SECRET_NAME = "ACCESS_SECRET";
@@ -38,7 +34,7 @@ public class GreetingsActivity extends ActionBarActivity implements ImageGridFra
         String appsecret = getResources().getString(R.string.db_app_secret);
         AppKeyPair appKeys = new AppKeyPair(appKey, appsecret);
         AndroidAuthSession session = new AndroidAuthSession(appKeys);
-        loadAuth(session);
+        loadAuth(session);//load the saved session if avaliable
         mDBApi = new DropboxAPI<AndroidAuthSession>(session);
 
         if (savedInstanceState == null) {
@@ -56,18 +52,13 @@ public class GreetingsActivity extends ActionBarActivity implements ImageGridFra
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.menu_greetings, menu);
         return true;
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
-
         if (id == R.id.menu_action_logout) {
             Log.i(TAG,"Log out clicked");
             mDBApi.getSession().unlink();
@@ -80,14 +71,13 @@ public class GreetingsActivity extends ActionBarActivity implements ImageGridFra
 
         return super.onOptionsItemSelected(item);
     }
-
     @Override
-    public void onFragmentInteraction(int position) {
+    public void onImageGridFragmentInteraction(int position) {
         Log.i(TAG, "Fragment Interaction:" + position);
     }
 
     @Override
-    public void onFragmentInteraction(String event) {
+    public void onLoginFragmentInteraction(String event) {
         if (event.equals(LoginFragment.DROPBOX_LOGIN_CLICKED)) {
             Log.i(TAG, "Activity saw login");
             doDropboxLogin();
@@ -117,7 +107,9 @@ public class GreetingsActivity extends ActionBarActivity implements ImageGridFra
             }
         }
     }
-
+    /**
+     * Loads the keys from SharedPreferences if avaliable
+     */
     private void loadAuth(AndroidAuthSession session) {
         SharedPreferences prefs = getSharedPreferences(ACCOUNT_PREFS_NAME, 0);
         String key = prefs.getString(ACCESS_KEY_NAME, null);
@@ -135,9 +127,7 @@ public class GreetingsActivity extends ActionBarActivity implements ImageGridFra
     }
 
     /**
-     * Shows keeping the access keys returned from Trusted Authenticator in a local
-     * store, rather than storing user name & password, and re-authenticating each
-     * time (which is not to be done, ever).
+     * Stores the keys in SharedPreferences
      */
     private void storeAuth(AndroidAuthSession session) {
         // Store the OAuth 2 access token, if there is one.

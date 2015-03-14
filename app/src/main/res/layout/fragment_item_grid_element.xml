@@ -6,7 +6,7 @@
     tools:context="com.repkap11.mobiquity.ImageGridFragment">
 
     <ImageView
-        android:padding="5dp"
+        android:padding="2dp"
         android:cropToPadding="true"
         android:scaleType="centerCrop"
         android:id="@+id/fragment_item_grid_element_image"

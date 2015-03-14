@@ -1,11 +1,16 @@
 <resources>
-    <string name="app_name">Mobiquity Paul Repka</string>
+    <string name="app_name">Mobiquity Repka</string>
     <string name="title_activity_greetings">Welsome to Paul Repka\'s Mobiquity Mobile Code
         Challenge
     </string>
-    <string name="hello_world">Hello world!</string>
     <string name="action_settings">Settings</string>
 
-<!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="login_button_label">Log in to Dropbox</string>
+
+    <string name="db_app_key">oemmy79k934nik4</string>
+    <string name="db_app_key_prefix">db-oemmy79k934nik4</string>
+
+    <string name="db_app_secret">tpllychhpn79v8z</string>
+
 </resources>

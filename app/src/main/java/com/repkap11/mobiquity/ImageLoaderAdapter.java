@@ -1,8 +1,9 @@
 package com.repkap11.mobiquity;
 
 import android.content.Context;
-import android.graphics.Bitmap;
-import android.media.Image;
+import android.content.Intent;
+import android.content.IntentFilter;
+import android.os.DropBoxManager;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -10,13 +11,14 @@ import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
 
+import com.dropbox.client2.DropboxAPI;
+import com.dropbox.client2.exception.DropboxException;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
-import com.nostra13.universalimageloader.core.assist.FailReason;
-import com.nostra13.universalimageloader.core.assist.ImageSize;
-import com.nostra13.universalimageloader.core.listener.ImageLoadingListener;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Random;
 
 /**
@@ -24,27 +26,30 @@ import java.util.Random;
  */
 public class ImageLoaderAdapter extends BaseAdapter {
     private static final String TAG = ImageLoaderAdapter.class.getSimpleName();
-    private Context mContext;
-    private int mNumImages;
-    public ImageLoaderAdapter(Context context){
+    private final ArrayList<String> mURLs;
+    private GreetingsActivity mActivity;
+    public ImageLoaderAdapter(GreetingsActivity activity, ArrayList<String> urls){
         Log.e(TAG,"Image loader recreated");
-
         DisplayImageOptions defaultOptions = new DisplayImageOptions.Builder()
         .cacheInMemory(true)
         .cacheOnDisk(true)
+        .considerExifParams(true)
+        //.showImageOnLoading(R.drawable.download_failure_icon)
+        //.showImageForEmptyUri(R.drawable.ic_empty)
+        .showImageOnFail(R.drawable.download_failure_icon)
         .build();
-        ImageLoaderConfiguration config = new ImageLoaderConfiguration.Builder(context)
+        ImageLoaderConfiguration config = new ImageLoaderConfiguration.Builder(activity)
         .defaultDisplayImageOptions(defaultOptions)
         .build();
         ImageLoader.getInstance().init(config);
-        this.mContext = context;
-        this.mNumImages =  new Random().nextInt((50 - 2) + 1) + 2;
-
+        this.mActivity = activity;
+        this.mURLs = urls;
     }
+
 
     @Override
     public int getCount() {
-        return mNumImages;
+        return mURLs.size();
     }
 
     @Override
@@ -68,7 +73,7 @@ private static class ItemHolder {
         ImageLoader loader = ImageLoader.getInstance();
         View returnView;
         if (convertView == null){
-            LayoutInflater inflater = (LayoutInflater) mContext.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+            LayoutInflater inflater = (LayoutInflater) mActivity.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
             returnView = inflater.inflate(R.layout.fragment_item_grid_element,parent, false);
             returnView.setTag(new ItemHolder(returnView));
         } else
@@ -76,7 +81,7 @@ private static class ItemHolder {
             returnView = convertView;
         }
         ImageView imageView = ((ItemHolder)returnView.getTag()).mImageView;
-        loader.displayImage("http://www.online-image-editor.com//styles/2014/images/example_image.png", imageView);
+        loader.displayImage(mURLs.get(position), imageView);
         /*
         loader.loadImage(, DisplayImageOptions.createSimple(),new ImageLoadingListener() {
             @Override

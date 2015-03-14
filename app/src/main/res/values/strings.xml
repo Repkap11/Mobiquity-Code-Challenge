@@ -1,9 +1,8 @@
 <resources>
     <string name="app_name">Mobiquity Repka</string>
-    <string name="title_activity_greetings">Welsome to Paul Repka\'s Mobiquity Mobile Code
-        Challenge
+    <string name="title_activity_greetings">Paul Repka\'s Mobiquity Code Challenge
     </string>
-    <string name="action_settings">Settings</string>
+    <string name="menu_action_logout">Log Out</string>
 
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="login_button_label">Log in to Dropbox</string>

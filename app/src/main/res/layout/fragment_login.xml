@@ -5,6 +5,7 @@
     tools:context="com.repkap11.mobiquity.LoginFragment">
 
     <TextView
+        android:id="@+id/fragment_login_is_logged_in"
         android:layout_alignParentTop="true"
         android:layout_alignParentRight="true"
         android:layout_alignParentLeft="true"

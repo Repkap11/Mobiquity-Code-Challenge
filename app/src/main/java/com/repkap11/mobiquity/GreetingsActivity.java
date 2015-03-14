@@ -1,5 +1,6 @@
 package com.repkap11.mobiquity;
 
+import android.app.Fragment;
 import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
@@ -7,6 +8,7 @@ import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.TextView;
 
 import com.dropbox.client2.DropboxAPI;
 import com.dropbox.client2.android.AndroidAuthSession;
@@ -14,11 +16,12 @@ import com.dropbox.client2.session.AccessTokenPair;
 import com.dropbox.client2.session.AppKeyPair;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
+import com.nostra13.universalimageloader.utils.MemoryCacheUtils;
 
 
 public class GreetingsActivity extends ActionBarActivity implements ImageGridFragment.OnFragmentInteractionListener, LoginFragment.OnFragmentInteractionListener {
     private static final String TAG = GreetingsActivity.class.getSimpleName();
-    private DropboxAPI<AndroidAuthSession> mDBApi;
+    public DropboxAPI<AndroidAuthSession> mDBApi;
     private String mDBAccessToken;
 
     //Used for DB access key cacheing
@@ -29,6 +32,7 @@ public class GreetingsActivity extends ActionBarActivity implements ImageGridFra
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_greetings);
 
         String appKey = getResources().getString(R.string.db_app_key);
         String appsecret = getResources().getString(R.string.db_app_secret);
@@ -37,14 +41,15 @@ public class GreetingsActivity extends ActionBarActivity implements ImageGridFra
         loadAuth(session);
         mDBApi = new DropboxAPI<AndroidAuthSession>(session);
 
-        setContentView(R.layout.activity_greetings);
         if (savedInstanceState == null) {
-            getFragmentManager().beginTransaction()
-                    .add(R.id.container, new LoginFragment())
-                    .commit();
-            //getFragmentManager().beginTransaction()
-            //        .add(R.id.container, new ImageGridFragment())
-            //        .commit();
+            Fragment frag;
+            if (session.isLinked()) {
+                frag = new ImageGridFragment();
+            } else {
+                frag = new LoginFragment();
+            }
+
+            getFragmentManager().beginTransaction().add(R.id.container, frag).commit();
         }
     }
 
@@ -63,8 +68,13 @@ public class GreetingsActivity extends ActionBarActivity implements ImageGridFra
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
 
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
+        if (id == R.id.menu_action_logout) {
+            Log.i(TAG,"Log out clicked");
+            mDBApi.getSession().unlink();
+            clearKeys();
+            ImageLoader.getInstance().getMemoryCache().clear();
+            ImageLoader.getInstance().getDiskCache().clear();
+            getFragmentManager().beginTransaction().replace(R.id.container, new LoginFragment()).commit();
             return true;
         }
 
@@ -85,24 +95,29 @@ public class GreetingsActivity extends ActionBarActivity implements ImageGridFra
             Log.i(TAG, "Fragment Interaction:" + event);
         }
     }
-    private void doDropboxLogin(){
+
+    private void doDropboxLogin() {
         mDBApi.getSession().startOAuth2Authentication(this);
         //control is sent to dropbox api, it is returned in onResume
     }
+
     protected void onResume() {
         super.onResume();
         if (mDBApi.getSession().authenticationSuccessful()) {
             try {
                 // Required to complete auth, sets the access token on the session
                 mDBApi.getSession().finishAuthentication();
-                storeAuth(mDBApi.getSession());
                 mDBAccessToken = mDBApi.getSession().getOAuth2AccessToken();
-                Log.i(TAG, "DB Auth successful:"+mDBAccessToken);
+                storeAuth(mDBApi.getSession());
+                Log.i(TAG, "DB Auth successful:" + mDBAccessToken);
+                getFragmentManager().beginTransaction().replace(R.id.container, new ImageGridFragment()).commit();
+
             } catch (IllegalStateException e) {
                 Log.i(TAG, "DB Auth Error:", e);
             }
         }
     }
+
     private void loadAuth(AndroidAuthSession session) {
         SharedPreferences prefs = getSharedPreferences(ACCOUNT_PREFS_NAME, 0);
         String key = prefs.getString(ACCESS_KEY_NAME, null);
@@ -112,6 +127,7 @@ public class GreetingsActivity extends ActionBarActivity implements ImageGridFra
         if (key.equals("oauth2:")) {
             // If the key is set to "oauth2:", then we can assume the token is for OAuth 2.
             session.setOAuth2AccessToken(secret);
+            Log.i(TAG, "DB Account set from saved memory");
         } else {
             // Still support using old OAuth 1 tokens.
             session.setAccessTokenPair(new AccessTokenPair(key, secret));
@@ -132,6 +148,7 @@ public class GreetingsActivity extends ActionBarActivity implements ImageGridFra
             edit.putString(ACCESS_KEY_NAME, "oauth2:");
             edit.putString(ACCESS_SECRET_NAME, oauth2AccessToken);
             edit.commit();
+            Log.i(TAG, "DB Account saved 2");
             return;
         }
         // Store the OAuth 1 access token, if there is one.  This is only necessary if
@@ -143,6 +160,7 @@ public class GreetingsActivity extends ActionBarActivity implements ImageGridFra
             edit.putString(ACCESS_KEY_NAME, oauth1AccessToken.key);
             edit.putString(ACCESS_SECRET_NAME, oauth1AccessToken.secret);
             edit.commit();
+            Log.i(TAG, "DB Account saved 1");
             return;
         }
     }

@@ -9,6 +9,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.TextView;
 
 
 /**
@@ -71,6 +72,8 @@ public class LoginFragment extends Fragment implements Button.OnClickListener{
         // Inflate the layout for this fragment
          View baseView = inflater.inflate(R.layout.fragment_login, container, false);
         ((Button)baseView.findViewById(R.id.fragment_login_login_button)).setOnClickListener(this);
+
+        TextView mTVIsLoggedIn = (TextView)baseView.findViewById(R.id.fragment_login_is_logged_in);
         return baseView;
     }
 

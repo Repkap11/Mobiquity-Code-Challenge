@@ -1,16 +1,21 @@
 package com.repkap11.mobiquity;
 
 import android.app.Activity;
+import android.content.BroadcastReceiver;
+import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.Bundle;
-import android.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AbsListView;
 import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.ListAdapter;
 import android.widget.TextView;
+
+import java.util.ArrayList;
 
 
 /**
@@ -22,10 +27,11 @@ import android.widget.TextView;
  * Activities containing this fragment MUST implement the {@link OnFragmentInteractionListener}
  * interface.
  */
-public class ImageGridFragment extends Fragment implements AbsListView.OnItemClickListener {
+public class ImageGridFragment extends DropboxAwareFragment implements AbsListView.OnItemClickListener {
 
-    // TODO: Rename parameter arguments, choose names that match
-    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
+    private static final String TAG = ImageGridFragment.class.getSimpleName();
+
+
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
 
@@ -61,8 +67,13 @@ public class ImageGridFragment extends Fragment implements AbsListView.OnItemCli
             mParam1 = getArguments().getString(ARG_PARAM1);
             mParam2 = getArguments().getString(ARG_PARAM2);
         }
-        mAdapter = new ImageLoaderAdapter(getActivity());
-
+        mAdapter = new ImageLoaderAdapter((GreetingsActivity)getActivity(), new ArrayList<String>());
+    }
+    @Override
+    public void onMetadataReceived(ArrayList<String> data){
+        Log.i(TAG,"Received data with:"+data.size()+" elements");
+        mAdapter = new ImageLoaderAdapter((GreetingsActivity)getActivity(),data);
+        ((AdapterView<ListAdapter>) mListView).setAdapter(mAdapter);
     }
 
     @Override
@@ -106,19 +117,11 @@ public class ImageGridFragment extends Fragment implements AbsListView.OnItemCli
             mListener.onFragmentInteraction(position);
         }
     }
-
-    /**
-     * The default content for this Fragment has a TextView that is shown when
-     * the list is empty. If you would like to change the text, call this method
-     * to supply the text it should use.
-     */
-    public void setEmptyText(CharSequence emptyText) {
-        View emptyView = mListView.getEmptyView();
-
-        if (emptyView instanceof TextView) {
-            ((TextView) emptyView).setText(emptyText);
-        }
+    @Override
+    public void onResume(){
+        super.onResume();
     }
+
 
     /**
      * This interface must be implemented by activities that contain this
@@ -134,5 +137,4 @@ public class ImageGridFragment extends Fragment implements AbsListView.OnItemCli
         // TODO: Update argument type and name
         public void onFragmentInteraction(int position);
     }
-
 }

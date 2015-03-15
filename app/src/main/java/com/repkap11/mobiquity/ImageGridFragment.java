@@ -48,7 +48,6 @@ public class ImageGridFragment extends PictureTakingFragment implements AbsListV
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_item_grid, container, false);
-
         // Set the adapter
         mListView = (AbsListView) view.findViewById(android.R.id.list);
         ((AdapterView<ListAdapter>) mListView).setAdapter(mAdapter);
@@ -89,6 +88,10 @@ public class ImageGridFragment extends PictureTakingFragment implements AbsListV
         super.onResume();
     }
 
+    @Override
+    public void onPause() {
+        super.onPause();
+    }
 
     /**
      * This interface must be implemented by activities that contain this
@@ -103,5 +106,11 @@ public class ImageGridFragment extends PictureTakingFragment implements AbsListV
     public interface FragmentInteractionListener {
         // TODO: Update argument type and name
         public void onImageGridFragmentInteraction(int position);
+    }
+
+    @Override
+    public void onDestroy() {
+        Log.e(TAG,"Grid Fragment Destroyed");
+        super.onDestroy();
     }
 }

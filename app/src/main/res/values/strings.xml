@@ -1,7 +1,6 @@
 <resources>
-    <string name="app_name">Mobiquity Repka</string>
-    <string name="title_activity_greetings">Paul Repka\'s Mobiquity Code Challenge
-    </string>
+    <string name="app_name">Paul Repka\'s Mobiquity Code Challenge</string>
+    <string name="title_activity_greetings">Repka Code Challenge</string>
     <string name="menu_action_logout">Log Out</string>
 
     <string name="hello_blank_fragment">Hello blank fragment</string>

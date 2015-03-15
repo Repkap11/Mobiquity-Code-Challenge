@@ -66,8 +66,8 @@ public abstract class DropboxAwareFragment extends Fragment {
                 mNeedsUploadPath = null;
             }
             if (mNeedsDownload) {
-                getDropboxMetadata("/");
                 mNeedsDownload = false;
+                getDropboxMetadata("/");
             }
         }
 

@@ -21,7 +21,7 @@ public class DropboxImageDownloader extends BaseImageDownloader {
 
     @Override
     protected InputStream getStreamFromOtherSource(String imageUri, Object extra) throws IOException {
-        Log.i(TAG, "Calling dropbox image downloader:"+imageUri);
+        //Log.i(TAG, "Calling dropbox image downloader:"+imageUri);
         try {
             InputStream stream = mAPI.getThumbnailStream(imageUri, DropboxAPI.ThumbSize.ICON_256x256, DropboxAPI.ThumbFormat.JPEG);
             //InputStream stream =  mAPI.getFileStream(imageUri, null);

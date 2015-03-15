@@ -1,6 +1,7 @@
 package com.repkap11.mobiquity;
 
 import android.app.Fragment;
+import android.app.FragmentManager;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
@@ -13,6 +14,7 @@ import com.dropbox.client2.android.AndroidAuthSession;
 import com.dropbox.client2.session.AccessTokenPair;
 import com.dropbox.client2.session.AppKeyPair;
 import com.nostra13.universalimageloader.core.ImageLoader;
+import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
 
 
 public class GreetingsActivity extends ActionBarActivity implements ImageGridFragment.FragmentInteractionListener, LoginFragment.FragmentInteractionListener {
@@ -36,16 +38,20 @@ public class GreetingsActivity extends ActionBarActivity implements ImageGridFra
         AndroidAuthSession session = new AndroidAuthSession(appKeys);
         loadAuth(session);//load the saved session if avaliable
         mDBApi = new DropboxAPI<AndroidAuthSession>(session);
-
-        if (savedInstanceState == null) {
+        String fragTag = "tag";
+        if (savedInstanceState == null){
+            Log.e(TAG,"Recreating Fragments");
+        //if(getFragmentManager().findFragmentByTag(fragTag) == null) {
             Fragment frag;
             if (session.isLinked()) {
                 frag = new ImageGridFragment();
             } else {
                 frag = new LoginFragment();
             }
-
-            getFragmentManager().beginTransaction().add(R.id.container, frag).commit();
+            //getFragmentManager().popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
+            getFragmentManager().beginTransaction().replace(R.id.container, frag,frag.getClass().getSimpleName()).commit();
+        } else{
+            Log.e(TAG,"NOT Recreating Fragments");
         }
     }
 
@@ -63,9 +69,15 @@ public class GreetingsActivity extends ActionBarActivity implements ImageGridFra
             Log.i(TAG,"Log out clicked");
             mDBApi.getSession().unlink();
             clearKeys();
-            ImageLoader.getInstance().getMemoryCache().clear();
-            ImageLoader.getInstance().getDiskCache().clear();
-            getFragmentManager().beginTransaction().replace(R.id.container, new LoginFragment()).commit();
+            try {
+                ImageLoader.getInstance().getMemoryCache().clear();
+                ImageLoader.getInstance().getDiskCache().clear();
+            } catch (IllegalStateException e) {
+                //This is fine, just means ImageLoader hasn't been inited yet.
+                //We don't want to init here and there is no way to check if
+                //we have initted.
+            }
+            getFragmentManager().beginTransaction().replace(R.id.container, new LoginFragment(),LoginFragment.class.getSimpleName()).commit();
             return true;
         }
 
@@ -93,17 +105,19 @@ public class GreetingsActivity extends ActionBarActivity implements ImageGridFra
 
     protected void onResume() {
         super.onResume();
-        if (mDBApi.getSession().authenticationSuccessful()) {
-            try {
-                // Required to complete auth, sets the access token on the session
-                mDBApi.getSession().finishAuthentication();
-                mDBAccessToken = mDBApi.getSession().getOAuth2AccessToken();
-                storeAuth(mDBApi.getSession());
-                Log.i(TAG, "DB Auth successful:" + mDBAccessToken);
-                getFragmentManager().beginTransaction().replace(R.id.container, new ImageGridFragment()).commit();
+        if (!mDBApi.getSession().isLinked()) {
+            if (mDBApi.getSession().authenticationSuccessful()) {
+                try {
+                    // Required to complete auth, sets the access token on the session
+                    mDBApi.getSession().finishAuthentication();
+                    mDBAccessToken = mDBApi.getSession().getOAuth2AccessToken();
+                    storeAuth(mDBApi.getSession());
+                    Log.i(TAG, "DB Auth successful:" + mDBAccessToken);
+                    getFragmentManager().beginTransaction().replace(R.id.container, new ImageGridFragment()).commit();
 
-            } catch (IllegalStateException e) {
-                Log.i(TAG, "DB Auth Error:", e);
+                } catch (IllegalStateException e) {
+                    Log.i(TAG, "DB Auth Error:", e);
+                }
             }
         }
     }

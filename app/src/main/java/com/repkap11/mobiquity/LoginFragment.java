@@ -19,7 +19,7 @@ import android.widget.TextView;
  * Use the {@link LoginFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class LoginFragment extends Fragment implements Button.OnClickListener{
+public class LoginFragment extends Fragment implements Button.OnClickListener {
     private static final String TAG = LoginFragment.class.getSimpleName();
 
 
@@ -34,16 +34,17 @@ public class LoginFragment extends Fragment implements Button.OnClickListener{
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setRetainInstance(true);
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-         View baseView = inflater.inflate(R.layout.fragment_login, container, false);
-        ((Button)baseView.findViewById(R.id.fragment_login_login_button)).setOnClickListener(this);
+        View baseView = inflater.inflate(R.layout.fragment_login, container, false);
+        ((Button) baseView.findViewById(R.id.fragment_login_login_button)).setOnClickListener(this);
 
-        TextView mTVIsLoggedIn = (TextView)baseView.findViewById(R.id.fragment_login_is_logged_in);
+        TextView mTVIsLoggedIn = (TextView) baseView.findViewById(R.id.fragment_login_is_logged_in);
         return baseView;
     }
 
@@ -71,7 +72,7 @@ public class LoginFragment extends Fragment implements Button.OnClickListener{
 
     @Override
     public void onClick(View v) {
-        Log.i(TAG,"Dropbox login clicked");
+        Log.i(TAG, "Dropbox login clicked");
         mListener.onLoginFragmentInteraction(DROPBOX_LOGIN_CLICKED);
     }
 

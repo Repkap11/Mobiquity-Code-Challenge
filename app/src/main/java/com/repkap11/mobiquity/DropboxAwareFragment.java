@@ -40,6 +40,8 @@ public abstract class DropboxAwareFragment extends Fragment {
             getActivity().getApplicationContext().registerReceiver(mResponseReceiver,
                     new IntentFilter(DropboxGetMetadataService.ACTION_UPLOAD_FILE));
 
+            getActivity().getApplicationContext().registerReceiver(mResponseReceiver,
+                    new IntentFilter(DropboxGetMetadataService.ACTION_UPLOAD_FILE_PROGRESS));
             mResponseReceiverRegistered = true;
         }
     }
@@ -59,7 +61,7 @@ public abstract class DropboxAwareFragment extends Fragment {
         public void onServiceConnected(ComponentName className, IBinder binder) {
             myServiceBinder = ((DropboxGetMetadataService.MyBinder) binder).getService();
             Log.i(TAG, "connected");
-            if (mNeedsUploadPath != null){
+            if (mNeedsUploadPath != null) {
                 uploadFileToDropbox(mNeedsUploadPath);
                 mNeedsUploadPath = null;
             }
@@ -114,10 +116,11 @@ public abstract class DropboxAwareFragment extends Fragment {
             Log.e(TAG, "Unable to get Dropbox metadata while activity is null");
         }
     }
-    protected void startDropboxFileUpload(String path){
+
+    protected void startDropboxFileUpload(String path) {
         mNeedsUploadPath = path;
-        if (myServiceBinder != null){
-            Log.e(TAG,"Problem, binds is already set, we need up upload now");
+        if (myServiceBinder != null) {
+            Log.e(TAG, "Problem, binds is already set, we need up upload now");
         }
     }
 
@@ -137,6 +140,7 @@ public abstract class DropboxAwareFragment extends Fragment {
     protected abstract void onMetadataReceived(ArrayList<String> data);
 
     protected abstract void onFileUploadComplete();
+    protected abstract void onFileUploadProgress(float progress);
 
     /**
      * Listens for results from DropboxGetMatadataService, and forwards them to onMetadataReceived
@@ -151,7 +155,12 @@ public abstract class DropboxAwareFragment extends Fragment {
                 onMetadataReceived(data);
             } else if (action.equals(DropboxGetMetadataService.ACTION_UPLOAD_FILE)) {
                 onFileUploadComplete();
+            } else if (action.equals(DropboxGetMetadataService.ACTION_UPLOAD_FILE_PROGRESS)) {
+                Log.e(TAG,"Progress Message Received");
+                float progress = intent.getFloatExtra(DropboxGetMetadataService.RESULT_EXTRA_PROGRESS,0);
+                onFileUploadProgress(progress);
             }
         }
+
     }
 }

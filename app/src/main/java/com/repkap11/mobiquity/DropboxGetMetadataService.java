@@ -28,6 +28,9 @@ public class DropboxGetMetadataService extends Service {
 
     public static final String ACTION_UPLOAD_FILE = "ACTION_UPLOAD_FILE";
 
+    public static final String ACTION_UPLOAD_FILE_PROGRESS = "ACTION_UPLOAD_FILE_PROGRESS";
+    public static final String RESULT_EXTRA_PROGRESS = "RESULT_EXTRA_PROGRESS";
+
     private Thread mDownloadThread = new Thread();
 
     public DropboxGetMetadataService() {
@@ -55,6 +58,9 @@ public class DropboxGetMetadataService extends Service {
                             file.length(), null, new ProgressListener() {
                                 @Override
                                 public void onProgress(long l, long l2) {
+                                    Intent progress = new Intent(ACTION_UPLOAD_FILE_PROGRESS);
+                                    progress.putExtra(RESULT_EXTRA_PROGRESS,((float)l/(float)l2));
+                                    sendBroadcast(progress);
                                     Log.i(TAG, "Upload Progress:" + l + " out of " + l2);
                                 }
                             });

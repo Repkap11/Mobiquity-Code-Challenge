@@ -1,6 +1,7 @@
 package com.repkap11.mobiquity;
 
 import android.app.Activity;
+import android.app.ProgressDialog;
 import android.content.ContentResolver;
 import android.content.Intent;
 import android.graphics.Bitmap;
@@ -26,6 +27,9 @@ import java.util.Date;
 public abstract class PictureTakingFragment extends DropboxAwareFragment implements View.OnClickListener {
 
     private static final String TAG = PictureTakingFragment.class.getSimpleName();
+    private ProgressDialog mProgressDialog;
+    private boolean mNeedsUpLoadProgressDialog = false;
+    private int mProgressDialogProgress = 0;
 
     Uri mImageUri;
 
@@ -96,14 +100,57 @@ public abstract class PictureTakingFragment extends DropboxAwareFragment impleme
                     mediaScanIntent.setData(mImageUri);
                     getActivity().sendBroadcast(mediaScanIntent);
                     Toast.makeText(getActivity(), mImageUri.toString(), Toast.LENGTH_LONG).show();
-                    Log.i(TAG,"URI toString: "+mImageUri.getPath());
+                    Log.i(TAG, "URI toString: " + mImageUri.getPath());
                     startDropboxFileUpload(new File(mImageUri.getPath()).getAbsolutePath());
+                    mNeedsUpLoadProgressDialog = true;
+                    showProgressDialog();
                 }
+        }
+    }
+
+    private void showProgressDialog() {
+        mProgressDialog.setIndeterminate(false);
+        mProgressDialog.setMessage("Uploading Image...");
+        mProgressDialog.setCancelable(false);
+        mProgressDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
+        mProgressDialog.setProgress(mProgressDialogProgress);
+        Log.e(TAG,"Initted With Progress:"+mProgressDialogProgress);
+        mProgressDialog.show();
+        mProgressDialog.setProgress(mProgressDialogProgress);
+    }
+
+    @Override
+    public void onAttach(Activity activity) {
+        Log.i(TAG, "On attach called");
+        super.onAttach(activity);
+        mProgressDialog = new ProgressDialog(activity);
+        if (mNeedsUpLoadProgressDialog) {
+            showProgressDialog();
+        }
+
+    }
+
+    @Override
+    public void onDetach() {
+        mProgressDialog.dismiss();
+        mProgressDialog = null;
+        super.onDetach();
+    }
+
+    @Override
+    protected void onFileUploadProgress(float progress) {
+        if (mProgressDialog != null) {
+            mProgressDialogProgress = (int) (progress * 100);
+            mProgressDialog.setProgress(mProgressDialogProgress);
         }
     }
 
     @Override
     protected void onFileUploadComplete() {
+        mNeedsUpLoadProgressDialog = false;
+        if (mProgressDialog != null) {
+            mProgressDialog.dismiss();
+        }
         getDropboxMetadata("/");
     }
 

@@ -1,5 +1,6 @@
 package com.repkap11.mobiquity;
 
+import android.app.Activity;
 import android.app.Fragment;
 import android.app.FragmentManager;
 import android.content.SharedPreferences;
@@ -17,7 +18,7 @@ import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
 
 
-public class GreetingsActivity extends ActionBarActivity implements ImageGridFragment.FragmentInteractionListener, LoginFragment.FragmentInteractionListener {
+public class GreetingsActivity extends Activity implements ImageGridFragment.FragmentInteractionListener, LoginFragment.FragmentInteractionListener {
     private static final String TAG = GreetingsActivity.class.getSimpleName();
     public DropboxAPI<AndroidAuthSession> mDBApi;
     private String mDBAccessToken;

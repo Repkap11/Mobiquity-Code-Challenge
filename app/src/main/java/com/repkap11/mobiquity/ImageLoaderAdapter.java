@@ -32,9 +32,9 @@ public class ImageLoaderAdapter extends BaseAdapter {
                 .cacheOnDisk(true)
                 .considerExifParams(true)
                 .imageScaleType(ImageScaleType.IN_SAMPLE_POWER_OF_2)
-                        //.showImageOnLoading(R.drawable.download_failure_icon)
+                 .showImageOnLoading(R.drawable.loading_image_drawable)
                         //.showImageForEmptyUri(null)
-                .showImageOnFail(R.drawable.download_failure_icon)
+                //.showImageOnFail(R.drawable.download_failure_icon)
                 .build();
         ImageLoaderConfiguration config = new ImageLoaderConfiguration.Builder(activity)
                 .defaultDisplayImageOptions(defaultOptions)

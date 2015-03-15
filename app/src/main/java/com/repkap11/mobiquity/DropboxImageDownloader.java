@@ -23,7 +23,7 @@ public class DropboxImageDownloader extends BaseImageDownloader {
     protected InputStream getStreamFromOtherSource(String imageUri, Object extra) throws IOException {
         //Log.i(TAG, "Calling dropbox image downloader:"+imageUri);
         try {
-            InputStream stream = mAPI.getThumbnailStream(imageUri, DropboxAPI.ThumbSize.ICON_256x256, DropboxAPI.ThumbFormat.JPEG);
+            InputStream stream = mAPI.getThumbnailStream(imageUri, DropboxAPI.ThumbSize.BESTFIT_640x480, DropboxAPI.ThumbFormat.JPEG);
             //InputStream stream =  mAPI.getFileStream(imageUri, null);
             return stream;
         } catch (DropboxUnlinkedException e) {

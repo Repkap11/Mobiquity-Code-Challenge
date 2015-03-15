@@ -9,6 +9,8 @@ import android.view.ViewGroup;
 import android.widget.AbsListView;
 import android.widget.AdapterView;
 import android.widget.ListAdapter;
+import android.widget.ProgressBar;
+import android.widget.ViewSwitcher;
 
 import java.util.ArrayList;
 
@@ -26,6 +28,10 @@ public class ImageGridFragment extends PictureTakingFragment implements AbsListV
     private FragmentInteractionListener mListener;
     private AbsListView mListView;
     private ImageLoaderAdapter mAdapter;
+    private ViewSwitcher mProgressSwitcher;
+    private boolean mNeedsToShowProgressSpiner = true;
+    private static final int SWITCHER_CHILD_PROGRESS = 0;
+    private static final int SWITCHER_CHILD_GRID = 1;
 
     public ImageGridFragment() {
     }
@@ -34,11 +40,14 @@ public class ImageGridFragment extends PictureTakingFragment implements AbsListV
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setRetainInstance(true);
-        mAdapter = new ImageLoaderAdapter((GreetingsActivity)getActivity(), new ArrayList<String>());
+        mAdapter = new ImageLoaderAdapter((GreetingsActivity) getActivity(), new ArrayList<String>());
     }
+
     @Override
-    public void onMetadataReceived(ArrayList<String> data){
-        Log.i(TAG,"Received data with:"+data.size()+" elements");
+    public void onMetadataReceived(ArrayList<String> data) {
+        Log.i(TAG, "Received data with:" + data.size() + " elements");
+        mNeedsToShowProgressSpiner = false;
+        updateSwitcherState();
         mAdapter.setData(data);
         mAdapter.notifyDataSetChanged();
 
@@ -49,12 +58,25 @@ public class ImageGridFragment extends PictureTakingFragment implements AbsListV
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_item_grid, container, false);
         // Set the adapter
+        ProgressBar spinner = (ProgressBar) view.findViewById(R.id.progressbar);
+        spinner.setIndeterminateDrawable(new CircularProgressDrawable(getResources(), R.color.colorPrimary, 4));
+
+        mProgressSwitcher = (ViewSwitcher) view.findViewById(R.id.switcher_grid_spinner);
+        updateSwitcherState();
         mListView = (AbsListView) view.findViewById(android.R.id.list);
         ((AdapterView<ListAdapter>) mListView).setAdapter(mAdapter);
 
         // Set OnItemClickListener so we can be notified on item clicks
         mListView.setOnItemClickListener(this);
         return view;
+    }
+
+    private void updateSwitcherState() {
+        if (mNeedsToShowProgressSpiner) {
+            mProgressSwitcher.setDisplayedChild(SWITCHER_CHILD_PROGRESS);
+        } else {
+            mProgressSwitcher.setDisplayedChild(SWITCHER_CHILD_GRID);
+        }
     }
 
     @Override
@@ -83,8 +105,9 @@ public class ImageGridFragment extends PictureTakingFragment implements AbsListV
             mListener.onImageGridFragmentInteraction(position);
         }
     }
+
     @Override
-    public void onResume(){
+    public void onResume() {
         super.onResume();
     }
 
@@ -110,7 +133,7 @@ public class ImageGridFragment extends PictureTakingFragment implements AbsListV
 
     @Override
     public void onDestroy() {
-        Log.e(TAG,"Grid Fragment Destroyed");
+        Log.e(TAG, "Grid Fragment Destroyed");
         super.onDestroy();
     }
 }

@@ -9,13 +9,16 @@
         android:layout_alignParentTop="true"
         android:layout_alignParentRight="true"
         android:layout_alignParentLeft="true"
+        android:layout_above="@+id/fragment_login_login_button"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="@string/hello_blank_fragment" />
+        android:gravity="center"
+        android:textSize="25sp"
+        android:layout_height="match_parent"
+        android:text="@string/welcome_message" />
     <Button
         android:onClick="loginOnClick"
         android:text="@string/login_button_label"
-        android:id="@+id/fragment_login_login_button"
+        android:id="@id/fragment_login_login_button"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"

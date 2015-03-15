@@ -1,8 +1,27 @@
 <resources>
-
-    <!-- Base application theme. -->
-    <style name="AppTheme" parent="Theme.AppCompat.Light.DarkActionBar">
-        <!-- Customize your theme here. -->
+    <!-- For all versions-->
+    <style name="AppTheme" parent="AppTheme.Base">
+        <item name="android:buttonStyle">@style/ButtonStyle</item>
     </style>
 
+    <!-- For fallback versions-->
+    <style name="AppTheme.Base" parent="android:Theme.Holo.Light">
+        <item name="android:actionBarStyle">@style/HoloActionBarStyle</item>
+
+    </style>
+
+    <style name="HoloActionBarStyle" parent="@android:style/Widget.Holo.Light.ActionBar">
+        <item name="android:background">@color/colorPrimary</item>
+        <item name="android:displayOptions">showHome|showTitle</item>
+        <item name="android:windowActionBarOverlay">true</item>
+        <item name="android:paddingLeft">14dp</item>
+        <item name="android:layout_marginLeft">-15dp</item>
+
+        <item name="android:height">55dp</item>
+    </style>
+
+    <style name="ButtonStyle" parent="@android:style/Widget.Button">
+        <item name="android:background">@drawable/apptheme_btn_default_holo_light</item>
+        <item name="android:padding">12dp</item>
+    </style>
 </resources>

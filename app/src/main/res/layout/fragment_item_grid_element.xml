@@ -5,14 +5,25 @@
     android:layout_height="match_parent"
     tools:context="com.repkap11.mobiquity.ImageGridFragment">
 
-    <ImageView
-        android:padding="2dp"
-        android:cropToPadding="true"
-        android:scaleType="centerCrop"
-        android:id="@+id/fragment_item_grid_element_image"
+    <FrameLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:gravity="center" />
+        android:layout_height="match_parent">
+
+        <ImageView
+            android:scaleType="centerCrop"
+            android:cropToPadding="true"
+            android:id="@+id/fragment_item_grid_element_image"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:padding="3dp"
+            android:gravity="center" />
+
+        <ImageView
+            android:background="@drawable/round_corner_frame"
+
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
+    </FrameLayout>
 
 
 </com.repkap11.mobiquity.SquareLinearLayout>

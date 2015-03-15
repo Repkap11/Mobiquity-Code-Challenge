@@ -5,6 +5,7 @@ import android.app.ProgressDialog;
 import android.content.ContentResolver;
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.graphics.drawable.Drawable;
 import android.media.Image;
 import android.net.Uri;
 import android.os.Bundle;
@@ -124,6 +125,7 @@ public abstract class PictureTakingFragment extends DropboxAwareFragment impleme
         Log.i(TAG, "On attach called");
         super.onAttach(activity);
         mProgressDialog = new ProgressDialog(activity);
+        mProgressDialog.setProgressDrawable(getResources().getDrawable(R.drawable.apptheme_progress_horizontal_holo_light));
         if (mNeedsUpLoadProgressDialog) {
             showProgressDialog();
         }

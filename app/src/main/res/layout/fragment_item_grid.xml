@@ -5,12 +5,26 @@
     android:layout_height="match_parent"
     tools:context="com.repkap11.mobiquity.ImageGridFragment">
 
-    <GridView
-        android:id="@android:id/list"
+    <ViewSwitcher
+        android:id="@+id/switcher_grid_spinner"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
         android:layout_above="@+id/button_take_picture"
-        android:numColumns="@integer/num_grid_across" />
+        android:layout_height="match_parent">
+
+        <ProgressBar
+            android:id="@+id/progressbar"
+            android:indeterminate="true"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center" />
+
+        <GridView
+            android:id="@android:id/list"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+
+            android:numColumns="@integer/num_grid_across" />
+    </ViewSwitcher>
 
     <Button
         android:id="@id/button_take_picture"
